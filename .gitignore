@@ -1,0 +1,11 @@
+# node packages
+/node_modules
+
+# JetBrains IDE cache
+/.idea
+
+# TypeScript compiler output
+/dist
+
+# Environment variables
+.env
