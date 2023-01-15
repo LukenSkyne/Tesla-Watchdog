@@ -1,4 +1,4 @@
-import { TeslaClient } from "./tesla.js"
+import { TeslaClient } from "./tesla"
 
 const client = new TeslaClient()
 const car = client.initMainVehicle()

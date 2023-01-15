@@ -2,14 +2,14 @@
 	"name": "tesla-watchdog",
 	"version": "0.0.1",
 	"private": true,
-	"main": "main.js",
-	"type": "module",
+	"main": "main.ts",
 	"scripts": {
-		"start": "tsc && node dist/main.js"
+		"start": "esrun src/main.ts"
 	},
 	"keywords": [],
 	"license": "MIT",
 	"dependencies": {
+		"@digitak/esrun": "^3.2.15",
 		"axios": "^1.2.2",
 		"dotenv": "^16.0.3"
 	},

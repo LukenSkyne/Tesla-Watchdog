@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios"
 import * as dotenv from "dotenv"
 import * as fs from "fs"
-import { logInfo, logError } from "./logger.js"
+import { logInfo, logError } from "./logger"
 
 const OWNER_API = "https://owner-api.teslamotors.com"
 const AUTH_API = "https://auth.tesla.com"
