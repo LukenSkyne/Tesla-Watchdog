@@ -133,11 +133,76 @@ export class TeslaClient extends TeslaClientBase {
 }
 
 class TeslaVehicle extends TeslaVehicleBase {
+
 	async wakeUp() {
 		return this.post("/wake_up")
 	}
 
+	/* Data Requests */
+
 	async getLatestData() {
 		return this.getOrNull("/latest_vehicle_data")
+	}
+
+	async getData() {
+		return this.get("/vehicle_data")
+	}
+
+	async getState() {
+		return this.get("/data_request/vehicle_state")
+	}
+
+	async getDriveState() {
+		return this.get("/data_request/drive_state")
+	}
+
+	async getClimateState() {
+		return this.get("/data_request/climate_state")
+	}
+
+	async getChargeState() {
+		return this.get("/data_request/charge_state")
+	}
+
+	async getReleaseNotes() {
+		return this.get("/release_notes")
+	}
+
+	/* Commands */
+
+	async autoConditioningStart() {
+		return this.post("/command/auto_conditioning_start")
+	}
+
+	async autoConditioningStop() {
+		return this.post("/command/auto_conditioning_stop")
+	}
+
+	async honkHornTwice() {
+		return this.post("/command/honk_horn")
+	}
+
+	async flashHeadlights() {
+		return this.post("/command/flash_lights")
+	}
+
+	async remoteStartDrive() {
+		return this.post("/command/remote_start_drive")
+	}
+
+	async unlockDoors() {
+		return this.post("/command/door_unlock")
+	}
+
+	async lockDoors() {
+		return this.post("/command/door_lock")
+	}
+
+	async openChargePort() {
+		return this.post("/command/charge_port_door_open")
+	}
+
+	async closeChargePort() {
+		return this.post("/command/charge_port_door_close")
 	}
 }
