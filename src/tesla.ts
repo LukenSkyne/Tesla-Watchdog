@@ -30,6 +30,11 @@ class TeslaClientBase {
 		this.refreshToken = process.env["REFRESH_TOKEN"]
 		this.mainVehicleId = process.env["MAIN_VEHICLE_ID"]
 
+		if (this.accessToken === undefined || this.refreshToken === undefined || this.mainVehicleId === undefined) {
+			logError("TeslaClient", "please configure your .env and start again")
+			process.exit(1)
+		}
+
 		this.api = axios.create({
 			baseURL: OWNER_API,
 			headers: {
