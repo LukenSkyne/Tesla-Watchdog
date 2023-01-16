@@ -124,22 +124,22 @@ export class TeslaClient extends TeslaClientBase {
 		return new TeslaVehicle(this, this.mainVehicleId)
 	}
 
-	async getProfile() {
+	async getProfile(): Promise<Profile> {
 		return this.get("/api/1/users/me")
 	}
 
-	async getVehicles() {
+	async getVehicles(): Promise<VehicleInfo[]> {
 		return this.get("/api/1/vehicles")
 	}
 
-	async getVehicle(id) {
+	async getVehicle(id): Promise<VehicleInfo> {
 		return this.get(`/api/1/vehicles/${id}`)
 	}
 }
 
 class TeslaVehicle extends TeslaVehicleBase {
 
-	async wakeUp() {
+	async wakeUp(): Promise<VehicleWakeInfo> {
 		return this.post("/wake_up")
 	}
 
