@@ -9,7 +9,7 @@
 	"keywords": [],
 	"license": "MIT",
 	"dependencies": {
-		"@digitak/esrun": "^3.2.15",
+		"@digitak/esrun": "^3.2.16",
 		"axios": "^1.2.2",
 		"dotenv": "^16.0.3"
 	},

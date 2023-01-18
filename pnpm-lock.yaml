@@ -1,14 +1,14 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@digitak/esrun': ^3.2.15
+  '@digitak/esrun': ^3.2.16
   '@types/node': ^18.11.18
   axios: ^1.2.2
   dotenv: ^16.0.3
   typescript: ^4.9.4
 
 dependencies:
-  '@digitak/esrun': 3.2.15
+  '@digitak/esrun': 3.2.16
   axios: 1.2.2
   dotenv: 16.0.3
 
@@ -18,8 +18,8 @@ devDependencies:
 
 packages:
 
-  /@digitak/esrun/3.2.15:
-    resolution: {integrity: sha512-lVWOG3+1Fd9/hZgaKaf/E4w5llt4Zh2k84+owRdqXBv3oZq9soCQg1ALoWmzBtGpIsdtdOgCrMzLiCAN6wykQA==}
+  /@digitak/esrun/3.2.16:
+    resolution: {integrity: sha512-k3Oaeg5fe2YO7pR0jXnUIsVfcrdpmIT/qazaLGGajgwyoaqZXxJt43sXcNJfFTzEBH7zTGRsnwBc5HLffycl6A==}
     engines: {node: '>=14.0'}
     hasBin: true
     dependencies:
