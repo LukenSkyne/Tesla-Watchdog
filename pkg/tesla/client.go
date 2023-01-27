@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/golang-jwt/jwt/v4"
 	"go.uber.org/zap"
+	"io"
 	"net/http"
 	"time"
 )
@@ -99,8 +100,15 @@ func (c *Client) refreshCredentials() {
 	c.config.Save()
 }
 
-func (c *Client) GetVehicle(id string) *VehicleInfo {
-	res, err := c.api.Get(OwnerApi + "/vehicles/" + id)
+func req[T any](c *Client, method string, path string, body io.Reader) *T {
+	req, err := http.NewRequest(method, path, body)
+
+	if err != nil {
+		c.log.Errorf("invalid request: %v\n", err)
+		return nil
+	}
+
+	res, err := c.api.Do(req)
 
 	if err != nil {
 		c.log.Errorf("request failed: %v\n", err)
@@ -109,23 +117,23 @@ func (c *Client) GetVehicle(id string) *VehicleInfo {
 
 	defer res.Body.Close()
 
-	var t VehicleInfoWrapper
+	var content T
 	dec := json.NewDecoder(res.Body)
 	dec.DisallowUnknownFields()
-	err = dec.Decode(&t)
+	err = dec.Decode(&content)
 
 	if err != nil {
 		c.log.Errorf("unmarshal failed: %v\n", err)
 		return nil
 	}
 
-	return &t.Response
+	return &content
 }
 
-func (c *Client) DoSomething() {
-	mainVehicle := c.GetVehicle(c.config.MainVehicle)
+func Get[T any](c *Client, path string) *T {
+	return req[T](c, "GET", OwnerApi+path, nil)
+}
 
-	c.log.Infow("GetVehicle",
-		"MainVehicle", mainVehicle,
-	)
+func Post[T any](c *Client, path string, body io.Reader) *T {
+	return req[T](c, "POST", OwnerApi+path, body)
 }

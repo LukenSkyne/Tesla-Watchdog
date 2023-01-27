@@ -8,6 +8,12 @@ type TokenRefreshResponse struct {
 	ExpiresIn    int    `json:"expires_in"`
 }
 
+type UserInfo struct {
+	Email           string `json:"email"`
+	FullName        string `json:"full_name"`
+	ProfileImageUrl string `json:"profile_image_url"`
+}
+
 type VehicleInfo struct {
 	Id                     int      `json:"id"`
 	IdString               string   `json:"id_s"`
@@ -28,4 +34,18 @@ type VehicleInfo struct {
 
 type VehicleInfoWrapper struct {
 	Response VehicleInfo `json:"response"`
+}
+
+type WakeUpInfo struct {
+	VehicleInfo
+	UserId int `json:"user_id"`
+}
+
+type WakeUpInfoWrapper struct {
+	Response WakeUpInfo `json:"response"`
+}
+
+type CommandResponse struct {
+	Reason string `json:"reason"`
+	Result bool   `json:"result"`
 }
