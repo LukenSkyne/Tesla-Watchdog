@@ -1,5 +1,8 @@
 # JetBrains IDE cache
 /.idea
 
-# Program config
+# program config
 *.yaml
+
+# generated binaries
+/dist
