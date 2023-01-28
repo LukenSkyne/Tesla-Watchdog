@@ -118,12 +118,23 @@ func req[T any](c *Client, method string, path string, body io.Reader) *T {
 	defer res.Body.Close()
 
 	var content T
-	dec := json.NewDecoder(res.Body)
+
+	data, err := io.ReadAll(res.Body)
+
+	if err != nil {
+		c.log.Errorf("reading body failed: %v\n", err)
+
+		return nil
+	}
+
+	dec := json.NewDecoder(bytes.NewReader(data))
 	dec.DisallowUnknownFields()
 	err = dec.Decode(&content)
 
 	if err != nil {
 		c.log.Errorf("unmarshal failed: %v\n", err)
+		c.log.Debugf("original: %v\n", string(data))
+
 		return nil
 	}
 
