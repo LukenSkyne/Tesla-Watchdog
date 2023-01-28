@@ -18,6 +18,10 @@ func (v *Vehicle) GetDriveState() *DriveStateWrapper {
 	return Get[DriveStateWrapper](v.c, v.data+"/drive_state")
 }
 
+func (v *Vehicle) GetVehicleState() *VehicleStateWrapper {
+	return Get[VehicleStateWrapper](v.c, v.data+"/vehicle_state")
+}
+
 /* commands */
 
 // TODO: add commands
