@@ -14,6 +14,11 @@ type UserInfo struct {
 	ProfileImageUrl string `json:"profile_image_url"`
 }
 
+type VehicleList struct {
+	Response []VehicleInfo `json:"response"`
+	Count    int           `json:"count"`
+}
+
 type VehicleInfo struct {
 	Id                     int      `json:"id"`
 	IdString               string   `json:"id_s"`
