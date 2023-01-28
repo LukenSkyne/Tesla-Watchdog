@@ -14,6 +14,10 @@ func (v *Vehicle) WakeUp() *WakeUpInfoWrapper {
 
 // TODO: add data requests
 
+func (v *Vehicle) GetDriveState() *DriveStateWrapper {
+	return Get[DriveStateWrapper](v.c, v.data+"/drive_state")
+}
+
 /* commands */
 
 // TODO: add commands
