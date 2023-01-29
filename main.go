@@ -77,7 +77,7 @@ func tick() {
 	}
 
 	lastTick = time.Now()
-	log.Debugw("Tick", "elapsed", elapsed)
+	//log.Debugw("Tick", "elapsed", elapsed)
 
 	info := car.GetInfo()
 
@@ -89,7 +89,7 @@ func tick() {
 	sleeping = info.Response.State != "online"
 
 	if sleeping {
-		log.Debugw("car is sleeping", "state", info.Response.State)
+		//log.Debugw("car is sleeping", "state", info.Response.State)
 		return
 	}
 
@@ -113,7 +113,7 @@ func tick() {
 		return
 	}
 
-	log.Infow("VehicleState",
+	log.Debugw("VehicleState",
 		"IsUserPresent", vehicleState.Response.IsUserPresent,
 		"DisplayState", vehicleState.Response.CenterDisplayState,
 		"Locked", vehicleState.Response.Locked,
