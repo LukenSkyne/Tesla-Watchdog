@@ -135,17 +135,17 @@ func tick() {
 		return
 	}
 
-	//lockDoorsResult := car.LockDoors()
-	//
-	//if lockDoorsResult == nil {
-	//	log.Error("failed to lock doors")
-	//	return
-	//}
-	//
-	//if !lockDoorsResult.Result {
-	//	log.Debugw("unable to lock doors", "result", lockDoorsResult)
-	//	return
-	//}
+	lockDoorsResult := car.LockDoors()
+
+	if lockDoorsResult == nil {
+		log.Error("failed to lock doors")
+		return
+	}
+
+	if !lockDoorsResult.Response.Result {
+		log.Debugw("unable to lock doors", "result", lockDoorsResult)
+		return
+	}
 
 	log.Info("Locking Doors")
 	nextLock = false
