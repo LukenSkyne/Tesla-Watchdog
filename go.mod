@@ -6,6 +6,7 @@ require (
 	github.com/bwmarrin/discordgo v0.27.0
 	github.com/golang-jwt/jwt/v4 v4.4.3
 	github.com/joho/godotenv v1.4.0
+	github.com/pkg/errors v0.8.1
 	go.uber.org/zap v1.24.0
 	gopkg.in/yaml.v3 v3.0.1
 )
