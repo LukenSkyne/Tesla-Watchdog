@@ -115,7 +115,13 @@ func tick() {
 		return
 	}
 
-	shouldLock := !vehicleState.Response.IsUserPresent
+	shouldLock := !vehicleState.Response.IsUserPresent &&
+		vehicleState.Response.DoorDriverFront == 0 &&
+		vehicleState.Response.DoorDriverRear == 0 &&
+		vehicleState.Response.DoorPassengerFront == 0 &&
+		vehicleState.Response.DoorPassengerRear == 0 &&
+		vehicleState.Response.DoorFrontTrunk == 0 &&
+		vehicleState.Response.DoorRearTrunk == 0
 
 	if !shouldLock {
 		nextLock = false
