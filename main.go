@@ -1,10 +1,11 @@
 package main
 
 import (
+	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 	"os"
 	"os/signal"
-	"syscall"
+	"tesla-watchdog/internal/discord"
 	"tesla-watchdog/pkg/tesla"
 	"time"
 )
@@ -15,36 +16,51 @@ var (
 	car    *tesla.Vehicle
 )
 
-func main() {
+func init() {
 	logger, _ := zap.NewDevelopment()
 	defer logger.Sync()
 	log = logger.Sugar()
 
-	sc := make(chan os.Signal, 1)
-	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("failed to load .env")
+	}
+}
+
+func main() {
+	discordLogger := discord.NewDiscord(log)
+
+	var ok bool
+	log, ok = discordLogger.Start()
+
+	if ok {
+		defer discordLogger.Stop()
+	}
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt)
+	shutdown := make(chan bool)
+
+	log.Infow("Started")
 
 	client = tesla.NewClient(log)
 	car = client.UseMainVehicle()
 
-	log.Infow("Started")
+	go func() {
+		for {
+			select {
+			case <-shutdown:
+				return
+			default:
+			}
 
-	//tmp := car.GetVehicleState()
-	//
-	//if tmp != nil {
-	//	log.Infow("TEMP", "tmp", tmp)
-	//}
-
-	for {
-		select {
-		case <-sc:
-			log.Infow("Stopped")
-			return
-		default:
+			tick()
+			time.Sleep(1 * time.Second)
 		}
+	}()
 
-		tick()
-		time.Sleep(1 * time.Second)
-	}
+	<-stop
+	log.Infow("Gracefully shutting down...")
+	shutdown <- true
 }
 
 var (
@@ -66,7 +82,7 @@ func tick() {
 	info := car.GetInfo()
 
 	if info == nil {
-		log.Error("gathering info failed")
+		//log.Error("gathering info failed")
 		return
 	}
 
@@ -77,11 +93,11 @@ func tick() {
 		return
 	}
 
-	car.WakeUp() // keep the car online
+	//car.WakeUp() // keep the car online
 	driveState := car.GetDriveState()
 
 	if driveState == nil {
-		log.Error("drive state unavailable")
+		//log.Error("drive state unavailable")
 		return
 	}
 
@@ -93,7 +109,7 @@ func tick() {
 	vehicleState := car.GetVehicleState()
 
 	if vehicleState == nil {
-		log.Error("vehicle state unavailable")
+		//log.Error("vehicle state unavailable")
 		return
 	}
 
@@ -138,15 +154,15 @@ func tick() {
 	lockDoorsResult := car.LockDoors()
 
 	if lockDoorsResult == nil {
-		log.Error("failed to lock doors")
+		//log.Error("failed to lock doors")
 		return
 	}
 
 	if !lockDoorsResult.Response.Result {
-		log.Debugw("unable to lock doors", "result", lockDoorsResult)
+		log.Warnw("unable to lock doors", "result", lockDoorsResult)
 		return
 	}
 
-	log.Info("Locking Doors")
+	log.Info("Doors Locked")
 	nextLock = false
 }
