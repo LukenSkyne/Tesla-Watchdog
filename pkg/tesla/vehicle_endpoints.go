@@ -26,6 +26,16 @@ func (v *Vehicle) GetVehicleState() *VehicleStateWrapper {
 
 // TODO: add commands
 
+func (v *Vehicle) LockDoors() *CommandResponse {
+	return Post[CommandResponse](v.c, v.cmd+"/door_lock", nil)
+}
+
+/*
+func (v *Vehicle) UnlockDoors() *CommandResponse {
+	return Post[CommandResponse](v.c, v.cmd+"/door_unlock", nil)
+}
+*/
+
 /*
 func (v *Vehicle) SetTemps() *CommandResponse {
 	jsonData, _ := json.Marshal(map[string]interface{}{
@@ -33,6 +43,6 @@ func (v *Vehicle) SetTemps() *CommandResponse {
 		"passenger_temp": 21.0,
 	})
 
-	return Post[CommandResponse](v.c, v.base+"/command/set_temps", bytes.NewBuffer(jsonData))
+	return Post[CommandResponse](v.c, v.cmd+"/set_temps", bytes.NewBuffer(jsonData))
 }
 */
