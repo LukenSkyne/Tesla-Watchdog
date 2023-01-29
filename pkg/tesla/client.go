@@ -52,14 +52,14 @@ func (c *Client) checkCredentials() {
 	token, _, err := new(jwt.Parser).ParseUnverified(c.config.AccessToken, jwt.MapClaims{})
 
 	if err != nil {
-		c.log.Errorf("parsing token: %v\n", err)
+		c.log.Errorf("parsing token: %v", err)
 		return
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 
 	if !ok {
-		c.log.Errorf("extracting token claims: %v\n", err)
+		c.log.Errorf("extracting token claims: %v", err)
 		return
 	}
 
@@ -82,7 +82,7 @@ func (c *Client) refreshCredentials() {
 	res, err := http.Post(AuthApi+"/oauth2/v3/token", "application/json", bytes.NewBuffer(jsonData))
 
 	if err != nil {
-		c.log.Errorf("[refreshing credentials] request failed: %v\n", err)
+		c.log.Errorf("[refreshing credentials] request failed: %v", err)
 		return
 	}
 
@@ -92,7 +92,7 @@ func (c *Client) refreshCredentials() {
 	err = json.NewDecoder(res.Body).Decode(&t)
 
 	if err != nil {
-		c.log.Errorf("[refreshing credentials] unmarshal failed: %v\n", err)
+		c.log.Errorf("[refreshing credentials] unmarshal failed: %v", err)
 		return
 	}
 

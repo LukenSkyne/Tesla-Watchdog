@@ -81,12 +81,12 @@ func tick() {
 	info, err := car.GetInfo()
 
 	if err != nil {
-		log.Errorf("GetInfo | %v\n", err)
+		log.Errorf("GetInfo | %v", err)
 		return
 	}
 
 	if info.Response == nil {
-		log.Warnf("GetInfo | %v\n", info.Error)
+		log.Warnf("GetInfo | %v", info.Error)
 		return
 	}
 
@@ -94,7 +94,7 @@ func tick() {
 
 	if lastSleeping != sleeping {
 		lastSleeping = sleeping
-		log.Infof("car is now %v\n", info.Response.State)
+		log.Infof("car is now %v", info.Response.State)
 	}
 
 	if sleeping {
@@ -104,12 +104,12 @@ func tick() {
 	latestData, err := car.GetLatestData()
 
 	if err != nil {
-		log.Errorf("GetLatestData | %v\n", err)
+		log.Errorf("GetLatestData | %v", err)
 		return
 	}
 
 	if latestData.Response == nil {
-		log.Warnf("GetLatestData | %v\n", latestData.Error)
+		log.Warnf("GetLatestData | %v", latestData.Error)
 		return
 	}
 
@@ -164,12 +164,12 @@ func tick() {
 	lockDoorsResult, err := car.LockDoors()
 
 	if err != nil {
-		log.Errorf("LockDoors | %v\n", err)
+		log.Errorf("LockDoors | %v", err)
 		return
 	}
 
 	if lockDoorsResult.Response == nil {
-		log.Warnf("LockDoors | %v\n", lockDoorsResult.Error)
+		log.Warnf("LockDoors | %v", lockDoorsResult.Error)
 		return
 	}
 
