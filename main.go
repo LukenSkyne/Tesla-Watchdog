@@ -64,83 +64,90 @@ func main() {
 }
 
 var (
-	lastTick = time.Now()
-	sleeping = false
-	nextLock = false
+	lastTick     = time.Now()
+	lastSleeping = false
+	nextLock     = false
 )
 
 func tick() {
 	elapsed := time.Now().Sub(lastTick).Seconds()
 
-	if elapsed < 10 || (sleeping && elapsed < 60) {
+	if elapsed < 10 || (lastSleeping && elapsed < 30) {
 		return
 	}
 
-	lastTick = time.Now()
 	//log.Debugw("Tick", "elapsed", elapsed)
+	lastTick = time.Now()
+	info, err := car.GetInfo()
 
-	info := car.GetInfo()
-
-	if info == nil {
-		//log.Error("gathering info failed")
+	if err != nil {
+		log.Errorf("GetInfo | %v\n", err)
 		return
 	}
 
-	sleeping = info.Response.State != "online"
+	if info.Response == nil {
+		log.Warnf("GetInfo | %v\n", info.Error)
+		return
+	}
+
+	sleeping := info.Response.State != "online"
+
+	if lastSleeping != sleeping {
+		lastSleeping = sleeping
+		log.Infof("car is now %v\n", info.Response.State)
+	}
 
 	if sleeping {
-		//log.Debugw("car is sleeping", "state", info.Response.State)
 		return
 	}
 
-	//car.WakeUp() // keep the car online
-	driveState := car.GetDriveState()
+	latestData, err := car.GetLatestData()
 
-	if driveState == nil {
-		//log.Error("drive state unavailable")
+	if err != nil {
+		log.Errorf("GetLatestData | %v\n", err)
 		return
 	}
 
-	if driveState.Response.ShiftState != nil {
+	if latestData.Response == nil {
+		log.Warnf("GetLatestData | %v\n", latestData.Error)
+		return
+	}
+
+	driveState := latestData.Response.Legacy.DriveState
+	vehicleState := latestData.Response.Legacy.VehicleState
+
+	if driveState.ShiftState != nil {
 		log.Debugw("car is not idle",
-			"ShiftState", driveState.Response.ShiftState,
-			"Speed", driveState.Response.Speed,
+			"ShiftState", driveState.ShiftState,
+			"Speed", driveState.Speed,
 		)
 		return
 	}
 
-	vehicleState := car.GetVehicleState()
-
-	if vehicleState == nil {
-		//log.Error("vehicle state unavailable")
+	if vehicleState.Locked {
+		nextLock = false
 		return
 	}
+
+	shouldLock := !vehicleState.IsUserPresent &&
+		vehicleState.DoorDriverFront == 0 &&
+		vehicleState.DoorDriverRear == 0 &&
+		vehicleState.DoorPassengerFront == 0 &&
+		vehicleState.DoorPassengerRear == 0 &&
+		vehicleState.DoorFrontTrunk == 0 &&
+		vehicleState.DoorRearTrunk == 0
 
 	log.Debugw("VehicleState",
-		"IsUserPresent", vehicleState.Response.IsUserPresent,
-		"DisplayState", vehicleState.Response.CenterDisplayState,
-		"Locked", vehicleState.Response.Locked,
-		"FrontLeft", vehicleState.Response.DoorDriverFront,
-		"FrontRight", vehicleState.Response.DoorPassengerFront,
-		"BackLeft", vehicleState.Response.DoorDriverRear,
-		"BackRight", vehicleState.Response.DoorPassengerRear,
-		"FrontTrunk", vehicleState.Response.DoorFrontTrunk,
-		"RearTrunk", vehicleState.Response.DoorRearTrunk,
+		"IsUserPresent", vehicleState.IsUserPresent,
+		"DisplayState", vehicleState.CenterDisplayState,
+		"Locked", vehicleState.Locked,
+		"FrontLeft", vehicleState.DoorDriverFront,
+		"FrontRight", vehicleState.DoorPassengerFront,
+		"BackLeft", vehicleState.DoorDriverRear,
+		"BackRight", vehicleState.DoorPassengerRear,
+		"FrontTrunk", vehicleState.DoorFrontTrunk,
+		"RearTrunk", vehicleState.DoorRearTrunk,
 	)
-
-	if vehicleState.Response.Locked {
-		nextLock = false
-		log.Debug("already locked")
-		return
-	}
-
-	shouldLock := !vehicleState.Response.IsUserPresent &&
-		vehicleState.Response.DoorDriverFront == 0 &&
-		vehicleState.Response.DoorDriverRear == 0 &&
-		vehicleState.Response.DoorPassengerFront == 0 &&
-		vehicleState.Response.DoorPassengerRear == 0 &&
-		vehicleState.Response.DoorFrontTrunk == 0 &&
-		vehicleState.Response.DoorRearTrunk == 0
 
 	if !shouldLock {
 		nextLock = false
@@ -154,18 +161,23 @@ func tick() {
 		return
 	}
 
-	lockDoorsResult := car.LockDoors()
+	lockDoorsResult, err := car.LockDoors()
 
-	if lockDoorsResult == nil {
-		//log.Error("failed to lock doors")
+	if err != nil {
+		log.Errorf("LockDoors | %v\n", err)
+		return
+	}
+
+	if lockDoorsResult.Response == nil {
+		log.Warnf("LockDoors | %v\n", lockDoorsResult.Error)
 		return
 	}
 
 	if !lockDoorsResult.Response.Result {
-		log.Warnw("unable to lock doors", "result", lockDoorsResult)
+		log.Warnw("LockDoors | unable to lock doors", "result", lockDoorsResult)
 		return
 	}
 
-	log.Info("Doors Locked")
+	log.Info("doors locked")
 	nextLock = false
 }
