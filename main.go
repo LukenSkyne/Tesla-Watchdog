@@ -101,10 +101,13 @@ func tick() {
 		return
 	}
 
-	log.Infow("DriveState",
-		"Shift", driveState.Response.ShiftState,
-		"Speed", driveState.Response.Speed,
-	)
+	if driveState.Response.ShiftState != nil {
+		log.Debugw("car is not idle",
+			"ShiftState", driveState.Response.ShiftState,
+			"Speed", driveState.Response.Speed,
+		)
+		return
+	}
 
 	vehicleState := car.GetVehicleState()
 
