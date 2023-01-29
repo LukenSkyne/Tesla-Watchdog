@@ -5,6 +5,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"log"
+	"math"
 	"os"
 	"time"
 )
@@ -20,7 +21,6 @@ type Discord struct {
 	log       *zap.SugaredLogger
 	botToken  string
 	channelId string
-	userId    string
 }
 
 func NewDiscord(log *zap.SugaredLogger) *Discord {
@@ -29,7 +29,6 @@ func NewDiscord(log *zap.SugaredLogger) *Discord {
 		log:       log,
 		botToken:  os.Getenv("BOT_TOKEN"),
 		channelId: os.Getenv("CHANNEL_ID"),
-		userId:    os.Getenv("USER_ID"),
 	}
 }
 
@@ -63,7 +62,7 @@ func (d *Discord) Start() (*zap.SugaredLogger, bool) {
 
 func (d *Discord) sendStartupMessage() {
 	tmp := &discordgo.MessageSend{
-		Content: "<@" + d.userId + ">",
+		Content: "",
 		Embeds: []*discordgo.MessageEmbed{
 			{
 				Type:      discordgo.EmbedTypeRich,
@@ -95,13 +94,14 @@ func (d *Discord) onLogCallback(entry zapcore.Entry) error {
 		color = 0
 	}
 
+	length := int(math.Min(256, float64(len(entry.Message))))
 	tmp := &discordgo.MessageSend{
-		Content: "<@" + d.userId + ">",
+		Content: "",
 		Embeds: []*discordgo.MessageEmbed{
 			{
 				Type:        discordgo.EmbedTypeRich,
 				Title:       entry.Level.CapitalString() + " @ " + entry.Caller.TrimmedPath(),
-				Description: entry.Message,
+				Description: entry.Message[:length],
 				Timestamp:   time.Now().Format(time.RFC3339),
 				Color:       color,
 			},
