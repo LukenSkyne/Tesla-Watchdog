@@ -3,6 +3,7 @@
 
 # program config
 *.yaml
+.env
 
 # generated binaries
 /dist
