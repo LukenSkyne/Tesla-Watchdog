@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"io"
 	"net/http"
@@ -66,7 +67,7 @@ func (c *Client) checkCredentials() {
 	remaining := time.Unix(exp, 0).Sub(time.Now())
 
 	if remaining.Minutes() < 1 {
-		c.log.Infow("Refreshing Credentials", "Remaining", remaining.Hours())
+		c.log.Infow("refreshing credentials", "remaining", remaining.Hours())
 		c.refreshCredentials()
 	}
 }
@@ -81,7 +82,7 @@ func (c *Client) refreshCredentials() {
 	res, err := http.Post(AuthApi+"/oauth2/v3/token", "application/json", bytes.NewBuffer(jsonData))
 
 	if err != nil {
-		c.log.Errorf("request failed: %v\n", err)
+		c.log.Errorf("[refreshing credentials] request failed: %v\n", err)
 		return
 	}
 
@@ -91,7 +92,7 @@ func (c *Client) refreshCredentials() {
 	err = json.NewDecoder(res.Body).Decode(&t)
 
 	if err != nil {
-		c.log.Errorf("unmarshal failed: %v\n", err)
+		c.log.Errorf("[refreshing credentials] unmarshal failed: %v\n", err)
 		return
 	}
 
@@ -100,19 +101,17 @@ func (c *Client) refreshCredentials() {
 	c.config.Save()
 }
 
-func req[T any](c *Client, method string, path string, body io.Reader) *T {
+func req[T any](c *Client, method string, path string, body io.Reader) (*T, error) {
 	req, err := http.NewRequest(method, path, body)
 
 	if err != nil {
-		c.log.Errorf("invalid request: %v\n", err)
-		return nil
+		return nil, err
 	}
 
 	res, err := c.api.Do(req)
 
 	if err != nil {
-		c.log.Errorf("request failed: %v\n", err)
-		return nil
+		return nil, err
 	}
 
 	defer res.Body.Close()
@@ -122,9 +121,7 @@ func req[T any](c *Client, method string, path string, body io.Reader) *T {
 	data, err := io.ReadAll(res.Body)
 
 	if err != nil {
-		c.log.Errorf("reading body failed: %v\n", err)
-
-		return nil
+		return nil, err
 	}
 
 	dec := json.NewDecoder(bytes.NewReader(data))
@@ -132,19 +129,16 @@ func req[T any](c *Client, method string, path string, body io.Reader) *T {
 	err = dec.Decode(&content)
 
 	if err != nil {
-		c.log.Errorf("unmarshal failed: %v\n", err)
-		c.log.Debugf("original: %v\n", string(data))
-
-		return nil
+		return nil, errors.Wrap(err, string(data))
 	}
 
-	return &content
+	return &content, nil
 }
 
-func Get[T any](c *Client, path string) *T {
+func Get[T any](c *Client, path string) (*T, error) {
 	return req[T](c, "GET", OwnerApi+path, nil)
 }
 
-func Post[T any](c *Client, path string, body io.Reader) *T {
+func Post[T any](c *Client, path string, body io.Reader) (*T, error) {
 	return req[T](c, "POST", OwnerApi+path, body)
 }

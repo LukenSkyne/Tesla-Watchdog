@@ -19,6 +19,12 @@ type VehicleList struct {
 	Count    int           `json:"count"`
 }
 
+type Wrapper[T any] struct {
+	Response  *T     `json:"response"`
+	Error     string `json:"error"`
+	ErrorDesc string `json:"error_description"`
+}
+
 type VehicleInfo struct {
 	Id                     int      `json:"id"`
 	IdString               string   `json:"id_s"`
@@ -26,8 +32,8 @@ type VehicleInfo struct {
 	Vin                    string   `json:"vin"`
 	DisplayName            string   `json:"display_name"`
 	OptionCodes            string   `json:"option_codes"`
-	Color                  *string  `json:"color"` // unknown
-	AccessType             string   `json:"access_type"`
+	Color                  *string  `json:"color"`       // unknown
+	AccessType             string   `json:"access_type"` // "OWNER"
 	Tokens                 []string `json:"tokens"`
 	State                  string   `json:"state"` // "online" | "asleep"
 	InService              bool     `json:"in_service"`
@@ -37,26 +43,14 @@ type VehicleInfo struct {
 	BackseatTokenUpdatedAt *string  `json:"backseat_token_updated_at"` // unknown
 }
 
-type VehicleInfoWrapper struct {
-	Response VehicleInfo `json:"response"`
-}
-
 type WakeUpInfo struct {
 	VehicleInfo
 	UserId int `json:"user_id"`
 }
 
-type WakeUpInfoWrapper struct {
-	Response WakeUpInfo `json:"response"`
-}
-
 type CommandResponse struct {
 	Reason string `json:"reason"`
 	Result bool   `json:"result"`
-}
-
-type CommandResponseWrapper struct {
-	Response CommandResponse `json:"response"`
 }
 
 type DriveState struct {
@@ -77,11 +71,8 @@ type DriveState struct {
 	Timestamp                      int     `json:"timestamp"`
 }
 
-type DriveStateWrapper struct {
-	Response DriveState `json:"response"`
-}
-
 type VehicleState struct {
+	HomelinkDeviceCount      int    `json:"homelink_device_count"`
 	ApiVersion               int    `json:"api_version"`
 	AutoparkStateV2          string `json:"autopark_state_v2"` // "unavailable" | "standby"
 	AutoparkStyle            string `json:"autopark_style"`    // "standard"
@@ -120,23 +111,28 @@ type VehicleState struct {
 	MediaState struct {
 		RemoteControlEnabled bool `json:"remote_control_enabled"`
 	} `json:"media_state"`
-	NotificationsSupported  bool    `json:"notifications_supported"`
-	Odometer                float64 `json:"odometer"`
-	ParsedCalendarSupported bool    `json:"parsed_calendar_supported"`
-	RemoteStart             bool    `json:"remote_start"`
-	RemoteStartEnabled      bool    `json:"remote_start_enabled"`
-	RemoteStartSupported    bool    `json:"remote_start_supported"`
-	SantaMode               int     `json:"santa_mode"`
-	SentryMode              bool    `json:"sentry_mode"`
-	SentryModeAvailable     bool    `json:"sentry_mode_available"`
-	ServiceMode             bool    `json:"service_mode"`
-	ServiceModePlus         bool    `json:"service_mode_plus"`
-	SoftwareUpdate          struct {
-		DownloadPerc        int    `json:"download_perc"`
-		ExpectedDurationSec int    `json:"expected_duration_sec"`
-		InstallPerc         int    `json:"install_perc"`
-		Status              string `json:"status"`  // ""
-		Version             string `json:"version"` // ""
+	NotificationsSupported   bool    `json:"notifications_supported"`
+	Odometer                 float64 `json:"odometer"`
+	ParsedCalendarSupported  bool    `json:"parsed_calendar_supported"`
+	RemoteStart              bool    `json:"remote_start"`
+	RemoteStartEnabled       bool    `json:"remote_start_enabled"`
+	RemoteStartSupported     bool    `json:"remote_start_supported"`
+	SantaMode                int     `json:"santa_mode"`
+	SentryMode               bool    `json:"sentry_mode"`
+	SentryModeAvailable      bool    `json:"sentry_mode_available"`
+	SmartSummonAvailable     bool    `json:"smart_summon_available"`
+	SummonStandbyModeEnabled bool    `json:"summon_standby_mode_enabled"`
+	SunRoofPercentOpen       int     `json:"sun_roof_percent_open"`
+	ServiceMode              bool    `json:"service_mode"`
+	ServiceModePlus          bool    `json:"service_mode_plus"`
+	SoftwareUpdate           struct {
+		DownloadPerc           int    `json:"download_perc"`
+		ExpectedDurationSec    int    `json:"expected_duration_sec"`
+		InstallPerc            int    `json:"install_perc"`
+		ScheduledTimeMs        int    `json:"scheduled_time_ms"`
+		WarningTimeRemainingMs int    `json:"warning_time_remaining_ms"`
+		Status                 string `json:"status"`  // ""
+		Version                string `json:"version"` // ""
 	} `json:"software_update"`
 	SpeedLimitMode struct {
 		Active          bool    `json:"active"`
@@ -170,6 +166,23 @@ type VehicleState struct {
 	WebcamAvailable            bool    `json:"webcam_available"`
 }
 
-type VehicleStateWrapper struct {
-	Response VehicleState `json:"response"`
+type AnyJson map[string]interface{}
+
+type LatestInfo struct {
+	Version int     `json:"version"`
+	PbData  *string `json:"pb_data,omitempty"`
+	Data    AnyJson `json:"data"`
+	Legacy  struct {
+		ChargeState      AnyJson      `json:"charge_state"`
+		ClimateState     AnyJson      `json:"climate_state"`
+		ClosuresState    AnyJson      `json:"closures_state"`
+		DriveState       DriveState   `json:"drive_state"`
+		GuiSettings      AnyJson      `json:"gui_settings"`
+		VehicleConfig    AnyJson      `json:"vehicle_config"`
+		VehicleState     VehicleState `json:"vehicle_state"`
+		SessionId        int          `json:"session_id"`
+		ProtoJsonVersion int          `json:"proto_json_version"`
+		UserId           int          `json:"user_id"`
+		VehicleInfo
+	} `json:"legacy"`
 }
