@@ -55,6 +55,10 @@ type CommandResponse struct {
 	Result bool   `json:"result"`
 }
 
+type CommandResponseWrapper struct {
+	Response CommandResponse `json:"response"`
+}
+
 type DriveState struct {
 	ActiveRouteLatitude            float64 `json:"active_route_latitude"`
 	ActiveRouteLongitude           float64 `json:"active_route_longitude"`
@@ -68,7 +72,7 @@ type DriveState struct {
 	NativeLocationSupported        int     `json:"native_location_supported"`
 	NativeType                     string  `json:"native_type"` // "wgs"
 	Power                          int     `json:"power"`
-	ShiftState                     *int    `json:"shift_state"`
+	ShiftState                     *string `json:"shift_state"` // "P" | "R" | "N" | "D"
 	Speed                          *int    `json:"speed"`
 	Timestamp                      int     `json:"timestamp"`
 }
@@ -100,6 +104,7 @@ type VehicleState struct {
 	IsUserPresent            bool   `json:"is_user_present"`
 	Locked                   bool   `json:"locked"`
 	MediaInfo                struct {
+		SourceNameA2DP       *string `json:"a2dp_source_name"`
 		AudioVolume          float64 `json:"audio_volume"`
 		AudioVolumeIncrement float64 `json:"audio_volume_increment"`
 		AudioVolumeMax       float64 `json:"audio_volume_max"`

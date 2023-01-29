@@ -26,8 +26,8 @@ func (v *Vehicle) GetVehicleState() *VehicleStateWrapper {
 
 // TODO: add commands
 
-func (v *Vehicle) LockDoors() *CommandResponse {
-	return Post[CommandResponse](v.c, v.cmd+"/door_lock", nil)
+func (v *Vehicle) LockDoors() *CommandResponseWrapper {
+	return Post[CommandResponseWrapper](v.c, v.cmd+"/door_lock", nil)
 }
 
 /*
