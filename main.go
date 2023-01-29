@@ -109,17 +109,23 @@ func tick() {
 		"RearTrunk", vehicleState.Response.DoorRearTrunk,
 	)
 
-	shouldLock := !vehicleState.Response.Locked && !vehicleState.Response.IsUserPresent
+	if vehicleState.Response.Locked {
+		nextLock = false
+		log.Debug("already locked")
+		return
+	}
+
+	shouldLock := !vehicleState.Response.IsUserPresent
 
 	if !shouldLock {
 		nextLock = false
-		log.Debug("shouldLock - requirements not met")
+		log.Debug("requirements to lock not met")
 		return
 	}
 
 	if !nextLock {
 		nextLock = true
-		log.Debug("shouldLock - locking doors on next iteration")
+		log.Debug("locking doors on next iteration")
 		return
 	}
 
