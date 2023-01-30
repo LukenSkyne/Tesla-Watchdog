@@ -48,6 +48,33 @@ func NewClient(log *zap.SugaredLogger) *Client {
 	return c
 }
 
+func (c *Client) FirstTimeSetup() bool {
+	if c.config.MainVehicle != "" {
+		return false
+	}
+
+	vehicleList, err := c.GetVehicleList()
+
+	if err != nil {
+		c.log.Fatalf("unable to perform first time setup: %v", err)
+	}
+
+	if len(vehicleList.Response) < 1 {
+		c.log.Fatal("no vehicles found")
+	}
+
+	c.config.MainVehicle = vehicleList.Response[0].IdString
+	c.config.Save()
+
+	c.log.Info("your main vehicle has been selected automatically, but you can change it in the config and restart")
+
+	for _, s := range vehicleList.Response {
+		c.log.Infof("%v = %v", s.DisplayName, s.Id)
+	}
+
+	return true
+}
+
 func (c *Client) checkCredentials() {
 	token, _, err := new(jwt.Parser).ParseUnverified(c.config.AccessToken, jwt.MapClaims{})
 
