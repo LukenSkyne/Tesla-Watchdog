@@ -35,8 +35,8 @@ func (d *Discord) Stop() {
 }
 
 func (d *Discord) Start() (*zap.SugaredLogger, bool) {
-	if d.botToken == "" {
-		d.log.Warn("no Token for Discord Bot supplied")
+	if d.botToken == "" || d.channelId == "" {
+		d.log.Warn("either Token or Channel ID not supplied for Discord Bot")
 		return d.log, false
 	}
 
