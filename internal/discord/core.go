@@ -6,7 +6,6 @@ import (
 	"go.uber.org/zap/zapcore"
 	"log"
 	"math"
-	"os"
 	"time"
 )
 
@@ -17,18 +16,17 @@ const (
 )
 
 type Discord struct {
-	session   *discordgo.Session
 	log       *zap.SugaredLogger
+	session   *discordgo.Session
 	botToken  string
 	channelId string
 }
 
-func NewDiscord(log *zap.SugaredLogger) *Discord {
+func NewDiscord(log *zap.SugaredLogger, botToken string, channelId string) *Discord {
 	return &Discord{
-		session:   nil,
 		log:       log,
-		botToken:  os.Getenv("BOT_TOKEN"),
-		channelId: os.Getenv("CHANNEL_ID"),
+		botToken:  botToken,
+		channelId: channelId,
 	}
 }
 
