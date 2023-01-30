@@ -76,6 +76,7 @@ func (w *WatchDog) tick() {
 	if w.state.wasAsleep != sleeping {
 		w.state.wasAsleep = sleeping
 		w.log.Infof("car is now %v", info.Response.State)
+		go w.discord.UpdateStatus(!sleeping)
 	}
 
 	if sleeping {

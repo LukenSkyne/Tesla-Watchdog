@@ -64,8 +64,27 @@ func (d *Discord) Start() (*zap.SugaredLogger, bool) {
 	})), true
 }
 
+func (d *Discord) UpdateStatus(status bool) {
+	strStatus := "online"
+
+	if !status {
+		strStatus = "dnd"
+	}
+
+	err := d.session.UpdateStatusComplex(discordgo.UpdateStatusData{
+		IdleSince:  nil,
+		Activities: nil,
+		AFK:        false,
+		Status:     strStatus,
+	})
+
+	if err != nil {
+		d.log.Debug("discord error: %v\n", err)
+	}
+}
+
 func (d *Discord) sendStartupMessage() {
-	tmp := &discordgo.MessageSend{
+	msg := &discordgo.MessageSend{
 		Content: "",
 		Embeds: []*discordgo.MessageEmbed{
 			{
@@ -77,7 +96,7 @@ func (d *Discord) sendStartupMessage() {
 		},
 	}
 
-	if _, err := d.session.ChannelMessageSendComplex(d.channelId, tmp); err != nil {
+	if _, err := d.session.ChannelMessageSendComplex(d.channelId, msg); err != nil {
 		d.log.Debug("discord error: %v\n", err)
 	}
 }
