@@ -91,11 +91,13 @@ func (w *WatchDog) tick() {
 	driveState := latestData.Response.Legacy.DriveState
 	vehicleState := latestData.Response.Legacy.VehicleState
 
-	if driveState.ShiftState != nil {
-		w.log.Debugw("car is not idle",
-			"ShiftState", driveState.ShiftState,
-			"Speed", driveState.Speed,
-		)
+	idle := driveState.ShiftState == nil
+
+	if !idle {
+		//w.log.Debugw("car is not idle",
+		//	"ShiftState", driveState.ShiftState,
+		//	"Speed", driveState.Speed,
+		//)
 		return // car is not idle
 	}
 
@@ -104,7 +106,7 @@ func (w *WatchDog) tick() {
 		return // already locked
 	}
 
-	shouldLock := !vehicleState.IsUserPresent &&
+	canLock := !vehicleState.IsUserPresent &&
 		vehicleState.DoorDriverFront == 0 &&
 		vehicleState.DoorDriverRear == 0 &&
 		vehicleState.DoorPassengerFront == 0 &&
@@ -124,15 +126,14 @@ func (w *WatchDog) tick() {
 		"RearTrunk", vehicleState.DoorRearTrunk,
 	)
 
-	if !shouldLock {
+	if !canLock {
 		w.state.doLock = false
-		w.log.Debug("requirements to lock not met")
 		return // requirements to lock not met
 	}
 
 	if !w.state.doLock {
 		w.state.doLock = true
-		w.log.Debug("locking doors on next iteration")
+		w.log.Info("locking doors on next iteration")
 		return // locking doors on next iteration
 	}
 
