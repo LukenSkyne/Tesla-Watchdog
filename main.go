@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"tesla-watchdog/internal/discord"
 	"tesla-watchdog/internal/watchdog"
+	"tesla-watchdog/pkg/tesla"
 )
 
 var (
@@ -20,24 +21,30 @@ func main() {
 	defer logger.Sync()
 	log = logger.Sugar()
 
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("failed to load .env")
+	teslaClient := tesla.NewClient(log)
+
+	if teslaClient.FirstTimeSetup() {
+		return
 	}
 
-	discordClient = discord.NewDiscord(
-		log,
-		os.Getenv("BOT_TOKEN"),
-		os.Getenv("CHANNEL_ID"),
-	)
+	if err := godotenv.Load(); err == nil {
+		discordClient = discord.NewDiscord(
+			log,
+			os.Getenv("BOT_TOKEN"),
+			os.Getenv("CHANNEL_ID"),
+		)
 
-	var ok bool
-	log, ok = discordClient.Start()
+		var ok bool
+		log, ok = discordClient.Start()
 
-	if ok {
-		defer discordClient.Stop()
+		if ok {
+			defer discordClient.Stop()
+		} else {
+			discordClient = nil
+		}
 	}
 
-	watchDog = watchdog.NewWatchDog(log, discordClient)
+	watchDog = watchdog.NewWatchDog(log, discordClient, teslaClient)
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt)
