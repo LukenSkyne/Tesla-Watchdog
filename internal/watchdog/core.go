@@ -23,9 +23,7 @@ type State struct {
 	doLock    bool
 }
 
-func NewWatchDog(log *zap.SugaredLogger, discord *discord.Discord) *WatchDog {
-	client := tesla.NewClient(log)
-
+func NewWatchDog(log *zap.SugaredLogger, discord *discord.Discord, client *tesla.Client) *WatchDog {
 	return &WatchDog{
 		stop:    make(chan bool),
 		log:     log,
@@ -76,7 +74,10 @@ func (w *WatchDog) tick() {
 	if w.state.wasAsleep != sleeping {
 		w.state.wasAsleep = sleeping
 		w.log.Infof("car is now %v", info.Response.State)
-		go w.discord.UpdateStatus(!sleeping)
+
+		if w.discord != nil {
+			go w.discord.UpdateStatus(!sleeping)
+		}
 	}
 
 	if sleeping {
