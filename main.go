@@ -5,6 +5,7 @@ import (
 	"go.uber.org/zap"
 	"os"
 	"os/signal"
+	"strings"
 	"tesla-watchdog/internal/discord"
 	"tesla-watchdog/pkg/tesla"
 	"time"
@@ -69,6 +70,10 @@ var (
 	nextLock     = false
 )
 
+func checkTimeout(msg string) bool {
+	return len(msg) < 30 && strings.Contains(msg, "timeout")
+}
+
 func tick() {
 	elapsed := time.Now().Sub(lastTick).Seconds()
 
@@ -86,7 +91,9 @@ func tick() {
 	}
 
 	if info.Response == nil {
-		log.Warnf("GetInfo | %v", info.Error)
+		if !checkTimeout(info.Error) {
+			log.Warnf("GetInfo | %v", info.Error)
+		}
 		return
 	}
 
@@ -109,7 +116,9 @@ func tick() {
 	}
 
 	if latestData.Response == nil {
-		log.Warnf("GetLatestData | %v", latestData.Error)
+		if !checkTimeout(latestData.Error) {
+			log.Warnf("GetLatestData | %v", latestData.Error)
+		}
 		return
 	}
 
@@ -169,7 +178,9 @@ func tick() {
 	}
 
 	if lockDoorsResult.Response == nil {
-		log.Warnf("LockDoors | %v", lockDoorsResult.Error)
+		if !checkTimeout(lockDoorsResult.Error) {
+			log.Warnf("LockDoors | %v", lockDoorsResult.Error)
+		}
 		return
 	}
 
