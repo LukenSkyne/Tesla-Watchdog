@@ -55,9 +55,15 @@ func (d *Discord) Start() (*zap.SugaredLogger, bool) {
 		log.Fatalf("cannot open Bot session: %v\n", err)
 	}
 
-	d.sendStartupMessage()
+	go d.sendStartupMessage()
 
-	return d.log.WithOptions(zap.Hooks(d.onLogCallback)), true
+	return d.log.WithOptions(zap.Hooks(func(entry zapcore.Entry) error {
+		if entry.Level == zap.WarnLevel || entry.Level == zap.ErrorLevel {
+			go d.onLogCallback(entry)
+		}
+
+		return nil
+	})), true
 }
 
 func (d *Discord) sendStartupMessage() {
@@ -78,11 +84,7 @@ func (d *Discord) sendStartupMessage() {
 	}
 }
 
-func (d *Discord) onLogCallback(entry zapcore.Entry) error {
-	if entry.Level == zap.InfoLevel || entry.Level == zap.DebugLevel {
-		return nil
-	}
-
+func (d *Discord) onLogCallback(entry zapcore.Entry) {
 	var color int
 
 	switch entry.Level {
@@ -111,6 +113,4 @@ func (d *Discord) onLogCallback(entry zapcore.Entry) error {
 	if _, err := d.session.ChannelMessageSendComplex(d.channelId, tmp); err != nil {
 		d.log.Debug("discord error: %v\n", err)
 	}
-
-	return nil
 }
