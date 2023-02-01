@@ -104,6 +104,10 @@ func (w *WatchDog) tick() {
 	}
 
 	if vehicleState.Locked {
+		if w.state.doLock {
+			w.log.Info("doors already got locked")
+		}
+
 		w.state.doLock = false
 		return // already locked
 	}
