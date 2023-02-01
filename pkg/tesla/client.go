@@ -94,7 +94,7 @@ func (c *Client) checkCredentials() {
 	remaining := time.Unix(exp, 0).Sub(time.Now())
 
 	if remaining.Minutes() < 1 {
-		c.log.Infow("refreshing credentials", "remaining", remaining.Hours())
+		c.log.Info("refreshing credentials")
 		c.refreshCredentials()
 	}
 }
