@@ -175,6 +175,8 @@ func validate[T any](w *WatchDog, r *tesla.Wrapper[T], err error, name string) b
 	if r.Response == nil {
 		if !checkTimeout(r.Error) {
 			w.log.Warnf("%v | %v", name, r.Error)
+		} else {
+			w.log.Debugf("%v | %v", name, r.Error)
 		}
 		return false
 	}
@@ -183,5 +185,5 @@ func validate[T any](w *WatchDog, r *tesla.Wrapper[T], err error, name string) b
 }
 
 func checkTimeout(msg string) bool {
-	return len(msg) < 30 && strings.Contains(msg, "timeout")
+	return (len(msg) < 30 && strings.Contains(msg, "timeout")) || (strings.Contains(msg, "operation_timedout"))
 }
