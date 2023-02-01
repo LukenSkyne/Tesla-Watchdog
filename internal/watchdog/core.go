@@ -19,6 +19,7 @@ type WatchDog struct {
 
 type State struct {
 	lastTick  time.Time
+	lastState string
 	wasAsleep bool
 	doLock    bool
 }
@@ -31,7 +32,10 @@ func NewWatchDog(log *zap.SugaredLogger, discord *discord.Discord, client *tesla
 		client:  client,
 		car:     client.UseMainVehicle(),
 		state: &State{
-			lastTick: time.Now(),
+			lastTick:  time.Now(),
+			lastState: "",
+			wasAsleep: false,
+			doLock:    false,
 		},
 	}
 }
@@ -71,9 +75,13 @@ func (w *WatchDog) tick() {
 
 	sleeping := info.Response.State != "online"
 
+	if w.state.lastState != info.Response.State {
+		w.state.lastState = info.Response.State
+		w.log.Infof("car is now %v", info.Response.State)
+	}
+
 	if w.state.wasAsleep != sleeping {
 		w.state.wasAsleep = sleeping
-		w.log.Infof("car is now %v", info.Response.State)
 
 		if w.discord != nil {
 			go w.discord.UpdateStatus(!sleeping)
