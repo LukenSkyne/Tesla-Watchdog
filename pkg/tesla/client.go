@@ -151,9 +151,7 @@ func req[T any](c *Client, method string, path string, body io.Reader) (*T, erro
 		return nil, err
 	}
 
-	dec := json.NewDecoder(bytes.NewReader(data))
-	dec.DisallowUnknownFields()
-	err = dec.Decode(&content)
+	err = json.NewDecoder(bytes.NewReader(data)).Decode(&content)
 
 	if err != nil {
 		return nil, errors.Wrap(err, string(data))
