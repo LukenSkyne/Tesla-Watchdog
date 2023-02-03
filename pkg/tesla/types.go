@@ -54,6 +54,7 @@ type CommandResponse struct {
 }
 
 type DriveState struct {
+	ActiveRouteEnergyAtArrival     int     `json:"active_route_energy_at_arrival"`
 	ActiveRouteLatitude            float64 `json:"active_route_latitude"`
 	ActiveRouteLongitude           float64 `json:"active_route_longitude"`
 	ActiveRouteTrafficMinutesDelay float64 `json:"active_route_traffic_minutes_delay"`
