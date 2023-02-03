@@ -154,7 +154,7 @@ func req[T any](c *Client, method string, path string, body io.Reader) (*T, erro
 	err = json.NewDecoder(bytes.NewReader(data)).Decode(&content)
 
 	if err != nil {
-		return nil, errors.Wrap(err, string(data))
+		return nil, errors.Wrap(errors.New(string(data)), err.Error())
 	}
 
 	return &content, nil
