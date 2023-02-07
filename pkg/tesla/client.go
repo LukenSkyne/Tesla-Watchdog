@@ -3,6 +3,7 @@ package tesla
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -142,6 +143,12 @@ func req[T any](c *Client, method string, path string, body io.Reader) (*T, erro
 	}
 
 	defer res.Body.Close()
+
+	isSuccess := res.StatusCode >= 200 && res.StatusCode < 300
+
+	if !isSuccess {
+		return nil, errors.New(fmt.Sprintf("API-Error: %v", res.StatusCode))
+	}
 
 	var content T
 
