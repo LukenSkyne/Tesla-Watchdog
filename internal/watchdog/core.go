@@ -168,7 +168,11 @@ func (w *WatchDog) tick() {
 
 func validate[T any](w *WatchDog, r *tesla.Wrapper[T], err error, name string) bool {
 	if err != nil {
-		w.log.Errorf("%v | %v", name, err)
+		if isApiError(err.Error()) {
+			w.log.Debugf("%v | %v", name, err.Error())
+		} else {
+			w.log.Errorf("%v | %v", name, err)
+		}
 		return false
 	}
 
@@ -185,6 +189,10 @@ func validate[T any](w *WatchDog, r *tesla.Wrapper[T], err error, name string) b
 	}
 
 	return true
+}
+
+func isApiError(msg string) bool {
+	return strings.Contains(msg, "API-Error")
 }
 
 func isRegularTimeout(msg string) bool {
