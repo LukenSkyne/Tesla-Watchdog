@@ -192,7 +192,7 @@ func validate[T any](w *WatchDog, r *tesla.Wrapper[T], err error, name string) b
 }
 
 func isApiError(msg string) bool {
-	return strings.Contains(msg, "API-Error")
+	return strings.Contains(msg, "API-Error") || strings.Contains(msg, "unexpected EOF")
 }
 
 func isRegularTimeout(msg string) bool {
