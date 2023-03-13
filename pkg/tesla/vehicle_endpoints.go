@@ -10,8 +10,8 @@ func (v *Vehicle) WakeUp() (*Wrapper[WakeUpInfo], error) {
 	return Post[Wrapper[WakeUpInfo]](v.c, v.base+"/wake_up", nil)
 }
 
-func (v *Vehicle) GetLatestData() (*Wrapper[LatestInfo], error) {
-	return Get[Wrapper[LatestInfo]](v.c, v.base+"/latest_vehicle_data")
+func (v *Vehicle) GetData() (*Wrapper[VehicleData], error) {
+	return Get[Wrapper[VehicleData]](v.c, v.base+"/vehicle_data")
 }
 
 /* data requests */

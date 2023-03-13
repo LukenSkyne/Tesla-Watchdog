@@ -169,21 +169,33 @@ type VehicleState struct {
 
 type AnyJson map[string]interface{}
 
-type LatestInfo struct {
-	Version int     `json:"version"`
-	PbData  *string `json:"pb_data,omitempty"`
-	Data    AnyJson `json:"data"`
-	Legacy  struct {
-		ChargeState      AnyJson      `json:"charge_state"`
-		ClimateState     AnyJson      `json:"climate_state"`
-		ClosuresState    AnyJson      `json:"closures_state"`
-		DriveState       DriveState   `json:"drive_state"`
-		GuiSettings      AnyJson      `json:"gui_settings"`
-		VehicleConfig    AnyJson      `json:"vehicle_config"`
-		VehicleState     VehicleState `json:"vehicle_state"`
-		SessionId        int          `json:"session_id"`
-		ProtoJsonVersion int          `json:"proto_json_version"`
-		UserId           int          `json:"user_id"`
-		VehicleInfo
-	} `json:"legacy"`
+type VehicleData struct {
+	ChargeState   AnyJson      `json:"charge_state"`
+	ClimateState  AnyJson      `json:"climate_state"`
+	ClosuresState AnyJson      `json:"closures_state"`
+	DriveState    DriveState   `json:"drive_state"`
+	GuiSettings   AnyJson      `json:"gui_settings"`
+	VehicleConfig AnyJson      `json:"vehicle_config"`
+	VehicleState  VehicleState `json:"vehicle_state"`
+	VehicleInfo
 }
+
+// DEPRECATED
+//type LatestInfo struct {
+//	Version int     `json:"version"`
+//	PbData  *string `json:"pb_data,omitempty"`
+//	Data    AnyJson `json:"data"`
+//	Legacy  struct {
+//		ChargeState      AnyJson      `json:"charge_state"`
+//		ClimateState     AnyJson      `json:"climate_state"`
+//		ClosuresState    AnyJson      `json:"closures_state"`
+//		DriveState       DriveState   `json:"drive_state"`
+//		GuiSettings      AnyJson      `json:"gui_settings"`
+//		VehicleConfig    AnyJson      `json:"vehicle_config"`
+//		VehicleState     VehicleState `json:"vehicle_state"`
+//		SessionId        int          `json:"session_id"`
+//		ProtoJsonVersion int          `json:"proto_json_version"`
+//		UserId           int          `json:"user_id"`
+//		VehicleInfo
+//	} `json:"legacy"`
+//}

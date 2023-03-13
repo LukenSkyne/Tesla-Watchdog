@@ -92,14 +92,14 @@ func (w *WatchDog) tick() {
 		return // car is in sleep mode
 	}
 
-	latestData, err := w.car.GetLatestData()
+	latestData, err := w.car.GetData()
 
 	if !validate(w, latestData, err, "GetLatestData") {
 		return // failed to get car data
 	}
 
-	driveState := latestData.Response.Legacy.DriveState
-	vehicleState := latestData.Response.Legacy.VehicleState
+	driveState := latestData.Response.DriveState
+	vehicleState := latestData.Response.VehicleState
 
 	idle := driveState.ShiftState == nil
 
