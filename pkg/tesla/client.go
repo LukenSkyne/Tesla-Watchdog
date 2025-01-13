@@ -54,23 +54,25 @@ func (c *Client) FirstTimeSetup() bool {
 		return false
 	}
 
-	vehicleList, err := c.GetVehicleList()
+	productList, err := c.GetProductList()
 
 	if err != nil {
 		c.log.Fatalf("unable to perform first time setup: %v", err)
 	}
 
-	if len(vehicleList.Response) < 1 {
+	vehicles := GetSortedVehicles(productList.Response)
+
+	if len(vehicles) < 1 {
 		c.log.Fatal("no vehicles found")
 	}
 
-	c.config.MainVehicle = vehicleList.Response[0].IdString
+	c.config.MainVehicle = vehicles[0].IdString
 	c.config.Save()
 
 	c.log.Info("your main vehicle has been selected automatically, but you can change it in the config and restart")
 
-	for _, s := range vehicleList.Response {
-		c.log.Infof("%v = %v", s.DisplayName, s.Id)
+	for _, s := range vehicles {
+		c.log.Infof("%v (%v) = %v", s.DisplayName, s.AccessType, s.Id)
 	}
 
 	return true
@@ -147,7 +149,7 @@ func req[T any](c *Client, method string, path string, body io.Reader) (*T, erro
 	isSuccess := res.StatusCode >= 200 && res.StatusCode < 300
 
 	if !isSuccess {
-		return nil, errors.New(fmt.Sprintf("API-Error: %v", res.StatusCode))
+		return nil, errors.New(fmt.Sprintf("API-Error: %v", res.StatusCode, res.Status))
 	}
 
 	var content T

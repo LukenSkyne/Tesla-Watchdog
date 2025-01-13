@@ -14,6 +14,11 @@ type UserInfo struct {
 	ProfileImageUrl string `json:"profile_image_url"`
 }
 
+type ProductList struct {
+	Response []ProductInfo `json:"response"`
+	Count    int           `json:"count"`
+}
+
 type VehicleList struct {
 	Response []VehicleInfo `json:"response"`
 	Count    int           `json:"count"`
@@ -23,6 +28,34 @@ type Wrapper[T any] struct {
 	Response  *T     `json:"response"`
 	Error     string `json:"error"`
 	ErrorDesc string `json:"error_description"`
+}
+
+type ProductInfo struct {
+	Id                   int64       `json:"id"`
+	IdString             string      `json:"id_s"`
+	UserId               int64       `json:"user_id"`
+	VehicleId            int64       `json:"vehicle_id"`
+	Vin                  string      `json:"vin"`
+	Color                interface{} `json:"color"`
+	AccessType           string      `json:"access_type"`
+	DisplayName          string      `json:"display_name"`
+	OptionCodes          interface{} `json:"option_codes"`
+	CachedData           string      `json:"cached_data"`
+	MobileAccessDisabled bool        `json:"mobile_access_disabled"`
+	GranularAccess       struct {
+		HidePrivate bool `json:"hide_private"`
+	} `json:"granular_access"`
+	Tokens                 interface{} `json:"tokens"`
+	State                  string      `json:"state"`
+	InService              bool        `json:"in_service"`
+	CalendarEnabled        bool        `json:"calendar_enabled"`
+	ApiVersion             int         `json:"api_version"`
+	BackseatToken          interface{} `json:"backseat_token"`
+	BackseatTokenUpdatedAt interface{} `json:"backseat_token_updated_at"`
+	BleAutopairEnrolled    bool        `json:"ble_autopair_enrolled"`
+	DeviceType             string      `json:"device_type"`
+	CommandSigning         string      `json:"command_signing"`
+	ReleaseNotesSupported  bool        `json:"release_notes_supported"`
 }
 
 type VehicleInfo struct {
