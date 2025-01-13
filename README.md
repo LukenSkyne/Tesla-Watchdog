@@ -15,6 +15,10 @@
 
 </div>
 
+## Note
+
+Tesla has deprecated the old REST API, including the `/command` endpoints. For more information, read [here](https://developer.tesla.com/docs/fleet-api/announcements#2023-11-17-vehicle-commands-endpoint-deprecation-timeline).
+
 ## About
 
 I am fairly happy with the Walk-Away Door Lock feature, but there have been edge cases where it didn't work as expected.
